@@ -1,3 +1,4 @@
+using Domain;
 using Domain.Expressions;
 
 namespace Example.Tests
@@ -7,9 +8,24 @@ namespace Example.Tests
         [Fact]
         public void Test()
         {
-            var parameter = Expression.Parameter("FirstName");
-            var constant = Expression.Constant("Jan");
-            var expression = Expression.Equal(parameter, constant);
+            var parameter = Expression.StringParameter("FirstName");
+            var constant = Expression.StringConstant("NotJan");
+            var expression = Expression.NotEqual(parameter, constant);
+
+            var interpreter = new ExpressionInterpreter(new ParameterValueProvider());
+
+            var result = interpreter.Interpret(expression);
+        }
+    }
+
+    public class ParameterValueProvider : IParameterValueProvider
+    {
+        public object GetParameterValue(string parameterName)
+        {
+            if (parameterName == "FirstName")
+                return "Jan";
+
+            return null;
         }
     }
 }

@@ -1,12 +1,21 @@
-﻿using Domain.Visitors;
-
-namespace Domain.Expressions
+﻿namespace Domain.Expressions
 {
-    public record ParameterExpression(string Name) : Expression
+    public abstract record ParameterExpression(string Name) : Expression
     {
-        public override T Accept<T>(IExpressionVisitor<T> visitor)
+        public T Match<T>(Func<StringParameterExpression, T> str, Func<IntegerParameterExpression, T> integer,
+            Func<BooleanParameterExpression, T> boolean)
         {
-            return visitor.Visit(this);
+            return this switch
+            {
+                StringParameterExpression x => str(x),
+                IntegerParameterExpression x => integer(x),
+                BooleanParameterExpression x => boolean(x),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
+
+    public record StringParameterExpression(string Name) : ParameterExpression(Name);
+    public record IntegerParameterExpression(string Name) : ParameterExpression(Name);
+    public record BooleanParameterExpression(string Name) : ParameterExpression(Name);
 }

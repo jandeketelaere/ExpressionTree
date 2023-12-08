@@ -1,4 +1,4 @@
-﻿namespace Domain.Visitors
+﻿namespace Domain
 {
     public interface IParameterValueProvider
     {

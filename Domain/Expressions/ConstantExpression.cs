@@ -1,12 +1,20 @@
-﻿using Domain.Visitors;
-
-namespace Domain.Expressions
+﻿namespace Domain.Expressions
 {
-    public record ConstantExpression(object Value) : Expression
+    public abstract record ConstantExpression : Expression
     {
-        public override T Accept<T>(IExpressionVisitor<T> visitor)
+        public T Match<T>(Func<StringConstantExpression, T> str, Func<IntegerConstantExpression, T> integer, Func<BooleanConstantExpression, T> boolean)
         {
-            return visitor.Visit(this);
+            return this switch
+            {
+                StringConstantExpression x => str(x),
+                IntegerConstantExpression x => integer(x),
+                BooleanConstantExpression x => boolean(x),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
+
+    public record StringConstantExpression(string Value) : ConstantExpression;
+    public record IntegerConstantExpression(int Value) : ConstantExpression;
+    public record BooleanConstantExpression(bool Value) : ConstantExpression;
 }
