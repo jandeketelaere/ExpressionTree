@@ -18,8 +18,17 @@
                 Equal,
                 NotEqual,
                 Not,
-                IfThenElse
+                IfThenElse,
+                And
             );
+        }
+
+        private Expression And(AndExpression expression)
+        {
+            var left = (BooleanConstantExpression)Interpret(expression.Left);
+            var right = (BooleanConstantExpression)Interpret(expression.Right);
+
+            return Expression.BooleanConstant(left.Value && right.Value);
         }
 
         private Expression IfThenElse(IfThenElseExpression expression)
@@ -45,7 +54,8 @@
             (
                 str => Expression.StringConstant((string) parameter),
                 integer => Expression.IntegerConstant((int) parameter),
-                boolean => Expression.BooleanConstant((bool) parameter)
+                boolean => Expression.BooleanConstant((bool) parameter),
+                strList => Expression.StringListConstant((IList<string>) parameter)
             );
         }
 
@@ -54,13 +64,55 @@
             var left = (ConstantExpression)Interpret(expression.Left);
             var right = (ConstantExpression)Interpret(expression.Right);
 
-            return (left, right) switch
+            return left.Match
+            (
+                str =>
+                {
+                    return right switch
+                    {
+                        StringConstantExpression rightStr => Expression.BooleanConstant(str.Value == rightStr.Value),
+                        StringListConstantExpression rightStrList => EqualStringListWithString(rightStrList.Value, str.Value),
+                        _ => throw new NotImplementedException()
+                    };
+                },
+                integer =>
+                {
+                    return right switch
+                    {
+                        IntegerConstantExpression rightInteger => Expression.BooleanConstant(integer.Value == rightInteger.Value),
+                        _ => throw new NotImplementedException()
+                    };
+                },
+                boolean =>
+                {
+                    return right switch
+                    {
+                        BooleanConstantExpression rightBoolean => Expression.BooleanConstant(boolean.Value == rightBoolean.Value),
+                        _ => throw new NotImplementedException()
+                    };
+                },
+                strList =>
+                {
+                    return right switch
+                    {
+                        StringConstantExpression rightStr => EqualStringListWithString(strList.Value, rightStr.Value),
+                        StringListConstantExpression rightStrList => Expression.BooleanConstant(strList.Value.SequenceEqual(rightStrList.Value)),
+                        _ => throw new NotImplementedException()
+                    };
+                }
+            );
+
+            static Expression EqualStringListWithString(IList<string> list, string str)
             {
-                (StringConstantExpression l, StringConstantExpression r) => Expression.BooleanConstant(l.Value == r.Value),
-                (IntegerConstantExpression l, IntegerConstantExpression r) => Expression.BooleanConstant(l.Value == r.Value),
-                (BooleanConstantExpression l, BooleanConstantExpression r) => Expression.BooleanConstant(l.Value == r.Value),
-                _ => throw new NotImplementedException(),
-            };
+                if (list.Count != 1)
+                    return Expression.BooleanConstant(false);
+
+                var firstItem = list.FirstOrDefault();
+                if (firstItem == null)
+                    return Expression.BooleanConstant(false);
+
+                return Expression.BooleanConstant(firstItem == str);
+            }
         }
 
         private Expression NotEqual(NotEqualExpression expression)
