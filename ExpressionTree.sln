@@ -5,11 +5,16 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{DFBBD7F8-67C0-4E0E-91F8-BAF3151EAA21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Tests", "Domain.Tests\Domain.Tests.csproj", "{CC02EDB8-D06D-4C28-A9A8-994FE789F421}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Tests", "Domain.Tests\Domain.Tests.csproj", "{CC02EDB8-D06D-4C28-A9A8-994FE789F421}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{27E3C4EF-F488-472C-8229-EA5D97CC4264}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example", "Example\Example.csproj", "{27E3C4EF-F488-472C-8229-EA5D97CC4264}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Tests", "Example.Tests\Example.Tests.csproj", "{9D96E35A-0082-4989-BE5B-2D168A5F2597}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.Tests", "Example.Tests\Example.Tests.csproj", "{9D96E35A-0082-4989-BE5B-2D168A5F2597}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C86B1640-BBEA-4BD0-B665-E24F0A809B7B}"
+	ProjectSection(SolutionItems) = preProject
+		todo.md = todo.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

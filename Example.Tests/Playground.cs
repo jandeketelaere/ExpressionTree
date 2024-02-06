@@ -1,5 +1,4 @@
 using Domain;
-using Domain.Expressions;
 
 namespace Example.Tests
 {
@@ -9,8 +8,9 @@ namespace Example.Tests
         public void Test()
         {
             var parameter = Expression.StringParameter("FirstName");
-            var constant = Expression.StringConstant("NotJan");
-            var expression = Expression.NotEqual(parameter, constant);
+            var constant = Expression.StringConstant("Jan");
+            var equal = Expression.Equal(parameter, constant);
+            var expression = Expression.IfThenElse(equal, Expression.StringConstant("Ja"), Expression.StringConstant("Nee"));
 
             var interpreter = new ExpressionInterpreter(new ParameterValueProvider());
 

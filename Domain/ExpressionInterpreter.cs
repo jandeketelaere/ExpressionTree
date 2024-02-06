@@ -1,6 +1,4 @@
-﻿using Domain.Expressions;
-
-namespace Domain
+﻿namespace Domain
 {
     public interface IExpressionInterpreter
     {
@@ -17,10 +15,21 @@ namespace Domain
             (
                 Constant,
                 Parameter,
-                Binary,
-                Unary,
-                Return
+                Equal,
+                NotEqual,
+                Not,
+                IfThenElse
             );
+        }
+
+        private Expression IfThenElse(IfThenElseExpression expression)
+        {
+            var test = (BooleanConstantExpression)Interpret(expression.Test);
+
+            if (test.Value)
+                return Interpret(expression.IfTrue);
+
+            return Interpret(expression.IfFalse);
         }
 
         private Expression Constant(ConstantExpression expression)
@@ -40,16 +49,7 @@ namespace Domain
             );
         }
 
-        private Expression Binary(BinaryExpression expression)
-        {
-            return expression.Match
-            (
-                Equal,
-                NotEqual
-            );
-        }
-
-        private Expression Equal(EqualBinaryExpression expression)
+        private Expression Equal(EqualExpression expression)
         {
             var left = (ConstantExpression)Interpret(expression.Left);
             var right = (ConstantExpression)Interpret(expression.Right);
@@ -63,33 +63,16 @@ namespace Domain
             };
         }
 
-        private Expression NotEqual(NotEqualBinaryExpression expression)
+        private Expression NotEqual(NotEqualExpression expression)
         {
             return Interpret(Expression.Not(Expression.Equal(expression.Left, expression.Right)));
         }
 
-        private Expression Unary(UnaryExpression expression)
+        private Expression Not(NotExpression expression)
         {
-            return expression.Match
-            (
-                Not
-            );
-        }
-        
-        private Expression Not(NotUnaryExpression expression)
-        {
-            var result = (ConstantExpression)Interpret(expression.Expression);
+            var result = (BooleanConstantExpression)Interpret(expression.Expression);
 
-            return result switch
-            {
-                BooleanConstantExpression x => Expression.BooleanConstant(!x.Value),
-                _ => throw new NotImplementedException()
-            };
-        }
-
-        private Expression Return(ReturnExpression expression)
-        {
-            return Interpret(expression.Expression);
+            return Expression.BooleanConstant(!result.Value);
         }
     }
 }
