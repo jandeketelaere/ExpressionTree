@@ -19,7 +19,8 @@
                 NotEqual,
                 Not,
                 IfThenElse,
-                And
+                And,
+                Or
             );
         }
 
@@ -29,6 +30,14 @@
             var right = (BooleanConstantExpression)Interpret(expression.Right);
 
             return Expression.BooleanConstant(left.Value && right.Value);
+        }
+
+        private Expression Or(OrExpression expression)
+        {
+            var left = (BooleanConstantExpression)Interpret(expression.Left);
+            var right = (BooleanConstantExpression)Interpret(expression.Right);
+
+            return Expression.BooleanConstant(left.Value || right.Value);
         }
 
         private Expression IfThenElse(IfThenElseExpression expression)

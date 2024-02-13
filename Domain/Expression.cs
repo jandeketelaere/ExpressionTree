@@ -13,6 +13,7 @@
     public record NotExpression(Expression Expression) : Expression;
     public record IfThenElseExpression(Expression Test, Expression IfTrue, Expression IfFalse) : Expression;
     public record AndExpression(Expression Left, Expression Right) : Expression;
+    public record OrExpression(Expression Left, Expression Right) : Expression;
 
     public abstract record Expression
     {
@@ -55,8 +56,11 @@
         public static Expression And(Expression left, Expression right)
             => new AndExpression(left, right);
 
+        public static Expression Or(Expression left, Expression right)
+            => new OrExpression(left, right);
+
         public T Match<T>(Func<ConstantExpression, T> constant, Func<ParameterExpression, T> parameter, Func<EqualExpression, T> equal,
-            Func<NotEqualExpression, T> notEqual, Func<NotExpression, T> not, Func<IfThenElseExpression, T> ifThenElse, Func<AndExpression, T> and)
+            Func<NotEqualExpression, T> notEqual, Func<NotExpression, T> not, Func<IfThenElseExpression, T> ifThenElse, Func<AndExpression, T> and, Func<OrExpression, T> or)
         {
             return this switch
             {
@@ -67,6 +71,7 @@
                 NotExpression x => not(x),
                 IfThenElseExpression x => ifThenElse(x),
                 AndExpression x => and(x),
+                OrExpression x => or(x),
                 _ => throw new NotImplementedException(),
             };
         }
