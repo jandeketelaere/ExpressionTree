@@ -14,6 +14,9 @@
     public record IfThenElseExpression(Expression Test, Expression IfTrue, Expression IfFalse) : Expression;
     public record AndExpression(Expression Left, Expression Right) : Expression;
     public record OrExpression(Expression Left, Expression Right) : Expression;
+    public record SwitchExpression(Expression SwitchValue, Expression DefaultBody, IEnumerable<SwitchCase> Cases) : Expression;
+    
+    public record SwitchCase(Expression Body, IEnumerable<Expression> TestValues);
 
     public abstract record Expression
     {
@@ -59,8 +62,12 @@
         public static Expression Or(Expression left, Expression right)
             => new OrExpression(left, right);
 
+        public static Expression Switch(Expression switchValue, Expression defaultBody, IEnumerable<SwitchCase> cases)
+            => new SwitchExpression(switchValue, defaultBody, cases);
+
         public T Match<T>(Func<ConstantExpression, T> constant, Func<ParameterExpression, T> parameter, Func<EqualExpression, T> equal,
-            Func<NotEqualExpression, T> notEqual, Func<NotExpression, T> not, Func<IfThenElseExpression, T> ifThenElse, Func<AndExpression, T> and, Func<OrExpression, T> or)
+            Func<NotEqualExpression, T> notEqual, Func<NotExpression, T> not, Func<IfThenElseExpression, T> ifThenElse, Func<AndExpression, T> and, Func<OrExpression, T> or,
+            Func<SwitchExpression, T> @switch)
         {
             return this switch
             {
@@ -72,6 +79,7 @@
                 IfThenElseExpression x => ifThenElse(x),
                 AndExpression x => and(x),
                 OrExpression x => or(x),
+                SwitchExpression x => @switch(x),
                 _ => throw new NotImplementedException(),
             };
         }

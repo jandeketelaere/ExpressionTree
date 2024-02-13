@@ -7,15 +7,21 @@ namespace Example.Tests
         [Fact]
         public void Test()
         {
+            var interpreter = new ExpressionInterpreter(new ParameterValueTestProvider());
+
             var leftExpression = Expression.Equal(Expression.StringParameter("FirstName"), Expression.StringConstant("Jan"));
             var rightExpression = Expression.Equal(Expression.StringListParameter("Names"), Expression.StringListConstant(new[] { "Deketelaere" }));
             var andExpression = Expression.And(leftExpression, rightExpression);
 
             var expression = Expression.IfThenElse(andExpression, ifTrue: Expression.StringConstant("Ja"), ifFalse: Expression.StringConstant("Nee"));
 
-            var interpreter = new ExpressionInterpreter(new ParameterValueTestProvider());
-
+            var switchExpression = Expression.Switch(switchValue: Expression.StringParameter("FirstName"), defaultBody: Expression.StringConstant("DefaultResult"), cases: new[]
+            {
+                new SwitchCase(Expression.StringConstant("JanResult"), new []{ Expression.StringConstant("Jan2"), Expression.StringConstant("Jan") } )
+            });
+            
             var result = interpreter.Interpret(expression);
+            var result2 = interpreter.Interpret(switchExpression);
         }
     }
 

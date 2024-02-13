@@ -20,8 +20,25 @@
                 Not,
                 IfThenElse,
                 And,
-                Or
+                Or,
+                Switch
             );
+        }
+
+        private Expression Switch(SwitchExpression expression)
+        {
+            foreach (var @case in expression.Cases)
+            {
+                foreach (var testValue in @case.TestValues)
+                {
+                    var result = (BooleanConstantExpression)Interpret(Expression.Equal(testValue, expression.SwitchValue));
+
+                    if (result.Value)
+                        return Interpret(@case.Body);
+                }
+            }
+
+            return Interpret(expression.DefaultBody);
         }
 
         private Expression And(AndExpression expression)
